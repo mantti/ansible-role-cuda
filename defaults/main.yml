@@ -22,4 +22,5 @@ cuda_bash_cpath: "/usr/local/cuda/include"
 
 dcmgmt_packages: "datacenter-gpu-manager-1.7.2-1.x86_64.rpm"
 dcmgmt_packages_exist: True
+dcmgmt_systemd: "dcgm.service"
 # vim:ft=ansible:

@@ -42,12 +42,19 @@
     meta: flush_handlers
 
   - name: Install datacenter mgmt package if we have it
-    tags: dc
+    tags: dcgm
     yum:
-      name: "{{ item }}"
+      name: "{{ dcmgmt_packages }}"
       state: installed
-    with_items: "{{ dcmgmt_packages }}"
     when: dcmgmt_packages_exist
+
+  - name: We'll enable dcgm systemd service
+    tags: dcgm
+    systemd:
+      daemon_reload: yes
+      enabled: yes
+      name: "{{dcmgmt_systemd}}"
+      state: started
 
   when: gpu
 
