@@ -20,4 +20,6 @@ cuda_bash_cuda_root: "/usr/local/cuda"
 cuda_bash_cuda_inc_dir: "/usr/local/cuda/bin"
 cuda_bash_cpath: "/usr/local/cuda/include"
 
+dcmgmt_packages: "datacenter-gpu-manager-1.7.2-1.x86_64.rpm"
+dcmgmt_packages_exist: True
 # vim:ft=ansible:

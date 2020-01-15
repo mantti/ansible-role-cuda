@@ -41,6 +41,14 @@
   - name: flush the handlers - so that GPUs are initialized before we start slurm
     meta: flush_handlers
 
+  - name: Install datacenter mgmt package if we have it
+    tags: dc
+    yum:
+      name: "{{ item }}"
+      state: installed
+    with_items: "{{ dcmgmt_packages }}"
+    when: dcmgmt_packages_exist
+
   when: gpu
 
 # vim:ft=ansible:
