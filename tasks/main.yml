@@ -55,6 +55,84 @@
       enabled: yes
       name: "{{dcmgmt_systemd}}"
       state: started
+  
+  - name: Make sure we have additional types on collectd
+    tags: dcgm
+    blockinfile:
+      path: /usr/share/collectd/types.db
+      state: present
+      block: |
+        # DCGM types
+        ecc_dbe_aggregate_total                  value:GAUGE:0:U
+        ecc_sbe_aggregate_total                  value:GAUGE:0:U
+        ecc_dbe_volatile_total                   value:GAUGE:0:U
+        ecc_sbe_volatile_total                   value:GAUGE:0:U
+        fb_free                                  value:GAUGE:0:U
+        fb_total                                 value:GAUGE:0:U
+        fb_used                                  value:GAUGE:0:U
+        gpu_temp                                 value:GAUGE:U:U
+        gpu_utilization                          value:GAUGE:0:100
+        mem_copy_utilization                     value:GAUGE:0:100
+        memory_clock                             value:GAUGE:0:U
+        memory_temp                              value:GAUGE:U:U
+        nvlink_bandwidth_total                   value:GAUGE:0:U
+        nvlink_recovery_error_count_total        value:GAUGE:0:U
+        nvlink_replay_error_count_total          value:GAUGE:0:U
+        pcie_replay_counter                      value:GAUGE:0:U
+        pcie_rx_throughput                       value:GAUGE:0:U
+        pcie_tx_throughput                       value:GAUGE:0:U
+        power_usage                              value:GAUGE:0:U
+        power_violation                          value:GAUGE:0:U
+        retired_pages_dbe                        value:GAUGE:0:U
+        retired_pages_pending                    value:GAUGE:0:U
+        retired_pages_sbe                        value:GAUGE:0:U
+        sm_clock                                 value:GAUGE:0:U
+        thermal_violation                        value:GAUGE:0:U
+        total_energy_consumption                 value:GAUGE:0:U
+        xid_errors                               value:GAUGE:0:U
+
+  - name: create directory for dcgm python-libraries
+    tags: dcgm
+    file:
+      path: "{{ dcmgmt_python_path }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Copy collectd-plugin
+    tags: dcgm
+    copy:
+      remote_src: yes
+      src: /usr/local/dcgm/samples/scripts/dcgm_collectd_plugin.py
+      dest: "{{ dcmgmt_python_path }}"
+
+  - name: Fix library-path to plugin.py
+    tags: dcgm
+    lineinfile:
+      path: "{{ dcmgmt_python_path }}/dcgm_collectd_plugin.py"
+      regexp: "^g_dcgmLibPath = '/usr/lib'$"
+      line: "g_dcgmLibPath = '/usr/lib64'"
+
+  - name: Adding dcgm python libraries
+    tags: dcgm
+    file: 
+      dest: "{{ dcmgmt_python_path }}/{{ item }}"
+      src: "/usr/local/dcgm/bindings/{{ item }}" 
+      state: link
+    with_items: "{{ dcmgmt_python_libs }}"
+
+  - name: Create collectd.conf for dcgm-plugin
+    tags: dcgm
+    template:
+      src: dcgm.j2
+      dest: "{{ dcmgmt_collectd_conf }}" 
+      
+  - name: Restart collectd service
+    tags: dcgm
+    service:
+      name: collectd.service
+      state: restarted
 
   when: gpu
 

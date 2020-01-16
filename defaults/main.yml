@@ -23,4 +23,20 @@ cuda_bash_cpath: "/usr/local/cuda/include"
 dcmgmt_packages: "datacenter-gpu-manager-1.7.2-1.x86_64.rpm"
 dcmgmt_packages_exist: True
 dcmgmt_systemd: "dcgm.service"
+dcmgmt_python_path: "/usr/lib64/collectd/dcgm"
+dcmgmt_python_libs:
+ - dcgm_agent.py
+ - DcgmFieldGroup.py
+ - dcgm_field_helpers.py
+ - dcgm_fields.py
+ - DcgmGroup.py
+ - DcgmHandle.py
+ - DcgmReader.py
+ - DcgmStatus.py
+ - dcgm_structs.py
+ - DcgmSystem.py
+ - dcgmvalue.py
+ - pydcgm.py
+dcmgmt_collectd_conf: /etc/collectd.d/dcgm.conf
+dcmgmt_collectd_plugin: /usr/local/dcgm/samples/scripts/dcgm_collectd_plugin.py
 # vim:ft=ansible:
