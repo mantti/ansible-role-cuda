@@ -41,11 +41,17 @@
   - name: flush the handlers - so that GPUs are initialized before we start slurm
     meta: flush_handlers
 
+  - name: Copy dcgm rpm to host
+    tags: dcgm
+    copy:
+      src: "files/{{ dcmgmt_packages }}"
+      dest: "/tmp/{{ dcmgmt_packages }}"
+
   - name: Install datacenter mgmt package if we have it
     tags: dcgm
     yum:
-      name: "{{ dcmgmt_packages }}"
-      state: installed
+      name: "/tmp/{{ dcmgmt_packages }}"
+      state: present
     when: dcmgmt_packages_exist
 
   - name: We'll enable dcgm systemd service
